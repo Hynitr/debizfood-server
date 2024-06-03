@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URI")
+}
+
+model User {
+  id        String     @id @default(uuid())
+  email     String     @unique
+  phone     String     @unique
+  firstname String
+  lastname  String
+  dob       DateTime
+  totp      Totp?
+  referral  Referral?
+  referred  Referred[]
+  status    UserStatus @default(ACTIVE)
+}
+
+model Totp {
+  id         String   @id @default(uuid())
+  otp        String
+  otp_expiry DateTime
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @unique @default(uuid())
+}
+
+model Referral {
+  id        String     @id @default(uuid())
+  points    Int        @default(0)
+  key       String     @unique
+  referred  Referred[]
+  user      User       @relation(references: [id], fields: [userId])
+  userId    String     @unique @default(uuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Referred {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  referral   Referral @relation(fields: [referralId], references: [id])
+  referralId String   @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @default(uuid())
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
