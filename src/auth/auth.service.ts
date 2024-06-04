@@ -1,5 +1,6 @@
 import { Response } from 'express'
 import { OTPDTO } from './dto/otp.dto'
+import { Referral } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
 import { MiscService } from 'libs/misc.service'
 import { StatusCodes } from 'enums/statusCodes'
@@ -37,6 +38,18 @@ export class AuthService {
                 return this.response.sendError(res, StatusCodes.Conflict, "Email or phone number already exist")
             }
 
+            let referral: Referral
+
+            if (refCode) {
+                referral = await this.prisma.referral.findUnique({
+                    where: { key: refCode }
+                })
+
+                if (!referral) {
+                    return this.response.sendError(res, StatusCodes.BadRequest, "Invalid referral code")
+                }
+            }
+
             const user = await this.prisma.user.create({
                 data: {
                     email, dob: new Date(dob),
@@ -62,14 +75,6 @@ export class AuthService {
             }
 
             if (refCode) {
-                const referral = await this.prisma.referral.findUnique({
-                    where: { key: refCode }
-                })
-
-                if (!referral) {
-                    return this.response.sendError(res, StatusCodes.BadRequest, "Invalid referral code")
-                }
-
                 await this.prisma.$transaction([
                     this.prisma.referral.update({
                         where: { key: refCode },

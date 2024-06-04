@@ -2,7 +2,7 @@ import { Transform } from 'class-transformer'
 import { ApiProperty } from '@nestjs/swagger'
 import { titleText, toLowerCase } from 'helpers/transformer'
 import {
-    IsDateString, IsEmail, IsOptional, IsPhoneNumber, IsString
+    IsDateString, IsEmail, IsNotEmpty, IsOptional, IsPhoneNumber, IsString
 } from 'class-validator'
 
 export class EmailDTO {
@@ -10,6 +10,7 @@ export class EmailDTO {
         example: 'kawojue08@gmail.com'
     })
     @IsEmail()
+    @IsNotEmpty()
     @Transform(({ value }) => toLowerCase(value))
     email: string
 }
@@ -18,6 +19,7 @@ export class SignupDTO extends EmailDTO {
     @ApiProperty({
         example: '08131911964'
     })
+    @IsNotEmpty()
     @IsPhoneNumber()
     phone: string
 
@@ -25,6 +27,7 @@ export class SignupDTO extends EmailDTO {
         example: 'Raheem'
     })
     @IsString()
+    @IsNotEmpty()
     @Transform(({ value }) => titleText(value))
     firstname: string
 
@@ -32,13 +35,14 @@ export class SignupDTO extends EmailDTO {
         example: 'Kawojue'
     })
     @IsString()
+    @IsNotEmpty()
     @Transform(({ value }) => titleText(value))
     lastname: string
 
     @ApiProperty({
         example: new Date()
     })
-    @IsDateString()
+    @IsNotEmpty()
     dob: string
 
     @ApiProperty({
