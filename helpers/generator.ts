@@ -13,7 +13,7 @@ export const generateOTP = (length: number = 6): IGenOTP => {
 
     const now: Date = new Date()
     const totp_expiry: Date = new Date(
-        now.setMinutes(now.getMinutes() + 5)
+        now.setMinutes(now.getMinutes() + 10)
     )
 
     return { totp, totp_expiry }

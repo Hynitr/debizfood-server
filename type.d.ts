@@ -23,7 +23,7 @@ interface Attachment {
 }
 
 type Status = 'ACTIVE' | 'SUSPENDED'
-type Roles = 'USER' | 'ADMIN' | 'Agent'
+type Roles = 'USER' | 'ADMIN'
 
 interface ExpressUser extends Express.User {
     sub: string
